@@ -1,0 +1,82 @@
+Problema 1 - Text Highlight
+
+Prima data am facut o functie care imi genereaza dictionarul cu cuvintele
+cheie hard-codate si apoi le-am adaugat pe rand, intr-un fel in care sa
+am si dictionarul meu alocat dinamic, si sa am si o introducere rapida
+a lor, fara cod copy paste.
+
+Apoi am facut functia de eliberare a memoriei pentru anu ava memory leak-uri.
+
+Problema 4 - Wordle
+
+Pentru aceasta problema m-am uitat pe net cum se foloseste biblioteca ncurses.
+Primul lucru am gasit un exemplt de hello world si un exemplu un pic mai dezvoltat
+si am inceput sa inteleg cum functioneaza codul, cautand fiecare functie individual.
+
+Exemplele m-au ajutat sa descopar structura de baza a unui program cu ncurses.
+
+Am trecut apoi de la Hello World cu printW() la a sparge ecranul in mai multe ferestre
+(bucati) pentru a-mi crea tabla de joc si interfata. Am in final 3 parti: un header
+sus cu titlul (iar daca decomentati liniile 186 si 187 o sa afiseze si cunvantul
+generat prima data, eu asa am testat programul pe parcurs), o tabla de joc si o zona
+care imita o consola interactiva.
+
+Pentru a genera dictionarul din care calculatorul isi va alege random cate un cuvant
+cu rand() am folosit aceeasi structura de cod ca la problema 1, am luat de acolo.
+I-am dat doar cuvintele din enunt, dar dictinarul paote fi usor extins, ii schimb
+valoarea lui N_KEY_WORDS si mai adaug in functia de generare alte cuvinte...
+la fel pot schimba si WORD_SIZE pentru a folosi cuvinte mai lungi.
+
+In functia init_pairs() pornesc modul de utilizare al culorilor in ncurses si imi
+creez niste perechi culoare de font- culoare de fundal cu care sa scriu. Am facut
+interfata grafica sa arate si bine sa fie si simpla. Pentru tabla de joc am ales
+doar un fundal alb pe care scriu fiecare litera cu culorile cerute in enunt.
+
+Pentru a afisa pe ecran folosesc waddstr() sau waddch() pentru a adauga siruri
+sau caractere in fereastra dorita, eventual mut si cursorul cu move() sau wmove()
+din cand in cand si dau refresh() sau wrefresh(). Setez si schimb culorile
+folosind wattron() si wattroff() pe perechile de culori definite de mine la 
+initializare.
+
+La validarea datelor de intrare am doua variante: daca strlen nu este 5 mai 
+trebuie introdus un nou sir si nu pierde jucatorul vieti, iar la cele cu 5 caractere
+merge la comparare. Daca o litera este in sir vad apoi daca este pe aceeasi pozitie
+pentru a alege culoarea corecta, galben sau verde. Am ales sa verific 
+input[i] == word[i] pentru a rezolva problema in care am o litera de mai multe
+ori. O sa arate cu verde litera care este pe pozitia corecta si cu galben
+alte incercari, am vazut ca unele cuvinte din dictionar au o litera de mai multe
+ori iar programul meu le identifica corect. Singurul lucru pe care l-as fi putut
+imbunatatii este ca daca litera mea apare odata in input de mai multe ori
+(la noi este corect un sir aaaaa) sa colorez in verde si galben doar cate apar...
+dar acest lucru nu era specificat explicit. Oricum faceam un vector in care marcam
+cu 1, 2, 3 cum voi colora literele si le afiseam parcurgandu-l cu for si as fi rezolvat
+aceasta problema.
+
+
+Pentru a citi input de la tastatura mi-am facut propria mea functie de citire
+bazata pe getch(). Cu backspace am avut unele probleme, in sensul ca daca il
+defineam ca fiind ASCII 8 nu imi mai mergea, iar cand am debugat am vazut
+ca el imi lua backspace de la tastatura cu 127 ca DEL....asa ca le-am bagat
+pe amandoua si programul imi merge. Motivul pentru care am renuntat sa mai implementez
+: era ca trebuisa sa verific fiecare apel getch() sa nu returneze caracterul special,
+apoi sa vad al doilea caracter daca era una dintre comenzi...imi strica asptectul
+codului.
+
+Jocul merge la infinit, dar aveti posibilitatea cand se termina o runda sa apasati 
+'q' pentru a iesi din joc. Sau CTRL + C pe parcurs :)
+
+Am preferat sa mai astept sa apese utilizatorul o tasta decat sa folosesc sleep()
+intre etape.
+
+Pe parcurs pentru debug am folosit fie printf fie waddstr() pe una din ferestre.
+
+Am renuntat la a duce implementarea functiei speciale cu : pana la capat din cauza
+ca la fiecare getch() trebuia sa verific caracterul sa nu fie : si apoi sa
+afisez in inter_active window un meniu special si sa iau q pentru quit si n pentru
+newgame, ceea ce ma forta la a muta toate citirile in main....inclusiv cand
+trebuie apasata o cheie pentru a merge mai departe. Ori aveam un main de 300 de linii
+ori aveam multe functii cu 10 parametrii doar pentru cazul in care o functie trebuia
+sa apeleze alta functie daca dadea de : si avea nevoie de multi parametri.
+
+Daca era specificat in enunt ca : se pot apela doar la o anumita etapa era mult
+mai usor.
